@@ -210,7 +210,8 @@ A choice whose `requires` is not met is shown disabled with the reason, not hidd
 
 ```js
 // quiz.js
-question = { id: "net-pay", text: "...", options: ["...", "...", "...", "..."], correct: 1 }
+question = { id: "net-pay", text: "...", options: ["...", "...", "...", "..."], correct: 1,
+             explain: "one sentence shown with the right answer on the thanks screen" }
 score(answers)                 -> number of correct answers, 0..6
 
 // reading.js
@@ -391,7 +392,9 @@ The Worker reaches the database as `env.DB` (set in `wrangler.jsonc`). Worker te
 
 ## 6. Tasks
 
-Phase 1 runs two tasks in parallel. Phase 2 starts when both are merged and the mockups are approved. At most two agents run at once.
+Phase 1 runs two tasks in parallel. `skeleton` merged on 21 Nov and the site is live at https://teenmoney.teenmoney.workers.dev. `measure` and `rooms` do not touch the look, so they start as soon as an agent slot is free; `screens` waits for the mockups to be approved. At most two agents run at once.
+
+The `sessions` table already exists in the live database. A task that needs to change its columns asks the architect first.
 
 | Task | Role | Phase | Owns | Done when |
 |---|---|---|---|---|
