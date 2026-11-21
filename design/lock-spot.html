@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lock: find the fee · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page page-wide lock lock-spot">
+  <header class="lock-header">
+    <p class="eyebrow">Week 2 door</p>
+    <h1 class="lock-prompt">One charge on this statement shouldn't be there. Tap it.</h1>
+  </header>
+
+  <form class="lock-form">
+    <article class="lock-document doc doc-statement" aria-labelledby="lock-document-title">
+      <div class="lock-document-head">
+        <h2 class="doc-title" id="lock-document-title">Riverbend Credit Union</h2>
+        <p class="doc-meta">Checking ending 4417 · Days 8 to 14</p>
+      </div>
+      <div class="lock-spot-summary"><span>Starting balance</span><span class="money">$412.50</span></div>
+      <div>
+        <div class="lock-spot-columns" aria-hidden="true"><span>Day</span><span>Description</span><span>Amount</span><span class="lock-spot-balance">Balance</span></div>
+        <ol class="lock-spot-lines">
+          <li><button class="lock-spot-line" type="button" aria-pressed="false"><span class="lock-spot-date">Day 8</span><span>Metro transit pass</span><span class="money money-out">-$15.00</span><span class="lock-spot-balance money">$397.50</span></button></li>
+          <li><button class="lock-spot-line" type="button" aria-pressed="false"><span class="lock-spot-date">Day 9</span><span>PhoneFix kiosk</span><span class="money money-out">-$120.00</span><span class="lock-spot-balance money">$277.50</span></button></li>
+          <li><button class="lock-spot-line" type="button" aria-pressed="false"><span class="lock-spot-date">Day 9</span><span>Corner Market</span><span class="money money-out">-$8.47</span><span class="lock-spot-balance money">$269.03</span></button></li>
+          <li><button class="lock-spot-line" type="button" aria-pressed="false"><span class="lock-spot-date">Day 10</span><span>Transfer to savings</span><span class="money money-out">-$20.00</span><span class="lock-spot-balance money">$249.03</span></button></li>
+          <li><button class="lock-spot-line" type="button" aria-pressed="false"><span class="lock-spot-date">Day 11</span><span>Taco Loco</span><span class="money money-out">-$9.25</span><span class="lock-spot-balance money">$239.78</span></button></li>
+          <li><button class="lock-spot-line" type="button" aria-pressed="true"><span class="lock-spot-date">Day 12</span><span>STREAMMAX PREMIUM AUTO-RENEW<span class="lock-spot-mark">Marked</span></span><span class="money money-out">-$14.99</span><span class="lock-spot-balance money">$224.79</span></button></li>
+          <li><button class="lock-spot-line" type="button" aria-pressed="false"><span class="lock-spot-date">Day 13</span><span>Corner Market</span><span class="money money-out">-$6.10</span><span class="lock-spot-balance money">$218.69</span></button></li>
+          <li><button class="lock-spot-line" type="button" aria-pressed="false"><span class="lock-spot-date">Day 14</span><span>Lumen Mobile phone bill</span><span class="money money-out">-$45.00</span><span class="lock-spot-balance money">$173.69</span></button></li>
+        </ol>
+      </div>
+      <div class="lock-spot-summary"><span>Ending balance</span><span class="money">$173.69</span></div>
+    </article>
+
+    <p class="lock-spot-choice" role="status">You marked: <strong>STREAMMAX PREMIUM AUTO-RENEW, -$14.99</strong></p>
+
+    <div class="lock-actions">
+      <button class="button button-block" type="submit">Try the door</button>
+    </div>
+  </form>
+</main>
+</body>
+</html>

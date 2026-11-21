@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Result of a choice · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page choice-result">
+  <header class="choice-header">
+    <p class="eyebrow">Week 2 of 4, day 9</p>
+    <dl class="meters">
+      <div class="meter meter-cash is-down" data-demo-meter>
+        <dt class="meter-label">Cash</dt>
+        <dd class="meter-value" data-demo-count data-from="41250" data-to="29250">$292.50</dd>
+        <dd class="meter-change money-out">-$120.00</dd>
+      </div>
+      <div class="meter meter-savings">
+        <dt class="meter-label">Saved</dt>
+        <dd class="meter-value">$60.00</dd>
+        <dd class="meter-change">no change</dd>
+      </div>
+      <div class="meter meter-mood is-up" data-mood="okay" style="--mood: 6">
+        <dt class="meter-label">Mood</dt>
+        <dd class="meter-value"><span class="meter-mood-bar" aria-hidden="true"></span>okay</dd>
+        <dd class="meter-change money-in">+1</dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="choice-result-body" aria-live="polite">
+    <p class="choice-result-picked">You chose: Fix it now</p>
+    <p class="choice-result-line">Fixed. That hurt.</p>
+  </section>
+
+  <button class="button button-block" type="button">Keep going</button>
+</main>
+<script src="demo.js"></script>
+</body>
+</html>

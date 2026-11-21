@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Thanks · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page thanks">
+  <header>
+    <h1>Thanks for playing.</h1>
+  </header>
+
+  <section class="thanks-save" data-state="error" role="alert">
+    <p class="thanks-save-title">We couldn't save your answers.</p>
+    <p>Check the wifi, then try again. Your answers stay on this device until they're saved.</p>
+    <button class="button button-block" type="button">Try again</button>
+  </section>
+
+  <dl class="thanks-scores">
+    <div class="thanks-score">
+      <dt class="thanks-score-label">Before</dt>
+      <dd class="thanks-score-value">3 of 6</dd>
+    </div>
+    <div class="thanks-score">
+      <dt class="thanks-score-label">After</dt>
+      <dd class="thanks-score-value">5 of 6</dd>
+      <dd class="thanks-score-change money-in">+2 right</dd>
+    </div>
+  </dl>
+
+  <section aria-labelledby="thanks-answers-title">
+    <h2 id="thanks-answers-title">The right answers</h2>
+    <ol class="thanks-answers">
+      <li class="thanks-answer">
+        <p class="thanks-answer-question">1. Why is your paycheck smaller than hours times pay?</p>
+        <p>Right answer: Taxes come out before you're paid.</p>
+        <p class="thanks-answer-mark is-right">You got it</p>
+      </li>
+      <li class="thanks-answer">
+        <p class="thanks-answer-question">2. Which of these is a need?</p>
+        <p>Right answer: Bus fare to get to your shifts.</p>
+        <p class="thanks-answer-mark is-right">You got it</p>
+      </li>
+      <li class="thanks-answer">
+        <p class="thanks-answer-question">3. A charge you don't recognize shows up. What first?</p>
+        <p>Right answer: Ask the bank about it.</p>
+        <p class="thanks-answer-mark is-right">You got it</p>
+      </li>
+      <li class="thanks-answer">
+        <p class="thanks-answer-question">4. What is an emergency fund for?</p>
+        <p>Right answer: Surprises you can't put off, like a repair.</p>
+        <p class="thanks-answer-mark is-right">You got it</p>
+      </li>
+      <li class="thanks-answer">
+        <p class="thanks-answer-question">5. What does "buy now, pay later" usually cost?</p>
+        <p>Right answer: More than paying once, if you add up fees.</p>
+        <p class="thanks-answer-mark is-wrong">Not this time. You said: the same price.</p>
+      </li>
+      <li class="thanks-answer">
+        <p class="thanks-answer-question">6. Your hours get cut. What's the best first move?</p>
+        <p>Right answer: Cut wants and look for extra income.</p>
+        <p class="thanks-answer-mark is-right">You got it</p>
+      </li>
+    </ol>
+  </section>
+
+  <div class="thanks-actions">
+    <button class="button button-secondary button-block" type="button">Play again</button>
+  </div>
+</main>
+</body>
+</html>
