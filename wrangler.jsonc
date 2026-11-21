@@ -8,8 +8,7 @@
     {
       "binding": "DB",
       "database_name": "teenmoney",
-      // Replaced with the real id at first deploy. Local dev does not use it.
-      "database_id": "00000000-0000-0000-0000-000000000000"
+      "database_id": "4eab6fab-9269-4a65-9afc-a3a21fd67528"
     }
   ]
 }
