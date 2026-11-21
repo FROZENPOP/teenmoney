@@ -57,6 +57,10 @@ Each room is: two or three spending choices, one surprise, then the lock on the 
 | 3 | Temptation | The thing you've wanted goes on sale. A "buy now, pay later" offer appears. | **True cost** (`code`). Two ways to pay for the same item. Enter how much more the pay-later plan costs. |
 | 4 | The squeeze | Your hours get cut. A group gift is due. | **Close the gap** (`pick`). You're short for the last week. Choose the set of cuts and extra shifts that reaches day 30 at $0 or better. |
 
+The pay stub and the true-cost checkout are the player's own. The week 2 statement and the week 4 shortfall are presented as an example about a coworker, Jordan, because their numbers cannot match every player's month; the prompts say so. Every document that names the employer says "Blend Street Smoothies".
+
+`biggestHit` ignores money moved into savings; it is the largest real cost.
+
 Lock rules:
 
 - A wrong answer can be retried and costs no money. Wrong tries are counted.
@@ -246,6 +250,16 @@ render(root, props, onDone)    // draws into root, calls onDone(result) once
 
 `main.js` owns the order of screens, the URL parameters (`group`, `class`), and autosave. Autosave writes the whole session to `localStorage` under the key `teenmoney.session.v1` after every screen, restores it on load, and clears it after a successful save. Storage errors are caught and the game carries on without autosave.
 
+Autosave rules (decided in the pre-launch audit, 21 Nov):
+
+- **Never stuck.** If restoring or running a saved step throws for any reason (old shape, content changed, corrupt data), clear the saved session and start fresh.
+- **The link wins.** Start fresh if the saved session's group differs from the link's group, or if it was last saved more than 3 hours ago.
+- **Within a week, events run in day order**, the surprise included.
+- **A lock's wrong tries are saved as they happen**, so a refresh does not reset them.
+- **One finished session per student.** After a successful save, store `teenmoney.done.v1` (`{ group, at }`). On load, if it is set and less than 12 hours old, show a "You're finished" screen instead of a new quiz; that screen has a "New student on this device" button that clears it. There is no "Play again" in the study build. A failed save never clears the session; "Try again" retries it.
+- `?class=` is upper-cased with spaces removed before use; if it is still invalid it is left out.
+- `hintUsed` means "reached 4 wrong tries, so 'Show me how' was offered", not "clicked it".
+
 The markup and class names for every screen come from `design/`. Screen modules reproduce that markup; they do not invent new structure or styles.
 
 ### 3.5 Saving: `public/js/save.js` and `worker/`
@@ -279,13 +293,15 @@ Content-Type: application/json
 400 { "ok": false, "error": "<what was wrong>" }    body fails validation
 405 { "ok": false, "error": "method not allowed" }  anything but POST
 413 { "ok": false, "error": "too large" }           body over 8 KB
+429 { "ok": false, "error": "too many requests" }   over the per-visitor limit (env.SAVE_LIMIT, 100 per minute)
 500 { "ok": false, "error": "could not save" }      database error, details not exposed
 ```
 
 Rules for the endpoint:
 
 - Every field is validated against the shape above; unknown fields are rejected.
-- The id (`crypto.randomUUID()`) and timestamp are made on the server.
+- The id (`crypto.randomUUID()`) and timestamp are made on the server. `created_at` is rounded down to the hour, so finishing order cannot identify a student.
+- Rate limit: before reading the body, call `env.SAVE_LIMIT.limit({ key })` with the `cf-connecting-ip` header as the key (or `"unknown"` when absent). This is the one header besides `content-length` and `content-type` the Worker may read; it is used only as the counting key and is never stored or logged.
 - SQL uses bound parameters only.
 - Nothing about the sender is stored or logged: no IP address, no user agent, no cookies.
 - There is no way to read, change or delete sessions through the site. Results are read by Shreyas with `wrangler d1 execute` or the Cloudflare dashboard.
