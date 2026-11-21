@@ -48,7 +48,7 @@ export const puzzles = [
     prompt: "Same earbuds, two ways to pay. The door code is how much more the pay-later plan costs.",
     document: {
       title: "Checkout",
-      item: "Wireless earbuds",
+      meta: "Wireless earbuds",
       options: [
         { label: "Pay today", lines: [{ label: "Price", amount: 16000 }] },
         {

@@ -165,7 +165,7 @@ export const events = [
     title: "Buy now, pay later",
     body: "Wireless earbuds are $160. The checkout offers 4 payments of $42 plus a $7 fee.",
     choices: [
-      { label: "Pay in 4 ($175 in total)", cash: -17500, mood: 2, result: "Looks cheap, costs $15 more." },
+      { label: "Pay in 4 ($175 in total)", cash: -17500, mood: 2, result: "Small payments, but they add up to more than the price." },
       { label: "Pay $160 now", cash: -16000, mood: 2, result: "Pricey, but no extra fees." },
       { label: "Skip them", result: "Your old earbuds still work." },
     ],
@@ -231,7 +231,7 @@ export const events = [
     body: "The shop is slow. Your manager takes 6 hours off your schedule, and $62 of pay with them.",
     choices: [
       { label: "Take the cut", cash: -6200, result: "Less work, less money. Same bills." },
-      { label: "Cover a coworker's Sunday shift", cash: -2000, mood: -2, result: "You got some hours back. You're wiped out." },
+      { label: "Cover a Sunday shift and win back $42", cash: -2000, mood: -2, result: "Now you're only $20 down. You're wiped out." },
     ],
   },
   {

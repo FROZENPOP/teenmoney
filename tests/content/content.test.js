@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { events } from "../../public/js/content/events.js";
 import { puzzles } from "../../public/js/content/puzzles.js";
-import { pickSurprise } from "../../public/js/game/engine.js";
+import { formatMoney, pickSurprise } from "../../public/js/game/engine.js";
 
 const kebab = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 const weekDays = { 1: [1, 7], 2: [8, 14], 3: [15, 21], 4: [22, 30] };
@@ -86,4 +86,24 @@ test("close-the-gap answer is the one set that closes the gap for the least mood
   const best = closing.filter((s) => s.moodLost === least);
   assert.equal(best.length, 1, "the answer is unique");
   assert.deepEqual(p.answer, best[0].ids);
+});
+
+test("puzzle documents use only the keys in ARCHITECTURE.md 3.2", () => {
+  const allowed = {
+    "pay-stub": ["lines", "answerLabel"],
+    "find-the-fee": ["lines"],
+    "true-cost": ["options", "answerLabel"],
+    "close-the-gap": ["shortfall", "options"],
+  };
+  for (const p of puzzles) {
+    for (const key of Object.keys(p.document)) assert.ok([...allowed[p.id], "title", "meta"].includes(key), `${p.id}: ${key}`);
+    for (const key of ["title", "meta"]) assert.ok(p.document[key] === undefined || typeof p.document[key] === "string", `${p.id}: ${key}`);
+  }
+});
+
+test("no choice result gives away a door code", () => {
+  const codes = puzzles.filter((p) => p.kind === "code").map((p) => [formatMoney(p.answer), formatMoney(p.answer).replace(/\.00$/, "")]);
+  for (const c of events.flatMap((e) => e.choices)) {
+    for (const code of codes.flat()) assert.ok(!c.result.includes(code), c.result);
+  }
 });
