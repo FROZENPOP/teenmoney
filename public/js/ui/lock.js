@@ -69,6 +69,7 @@ const KINDS = {
       document,
       field: input,
       read: () => {
+        if (input.value.trim().startsWith("-")) return { error: "Leave out the minus sign." };
         const cents = toCents(input.value);
         return cents === null ? { error: "Type the amount in dollars and cents, like 12.34." } : { input: cents };
       },
@@ -212,13 +213,18 @@ const KINDS = {
   },
 };
 
-// props: { state, puzzle } for any lock kind. onDone(stateWithLockRecorded) after the door opens.
-export function render(root, { state, puzzle }, onDone) {
+// props: { state, puzzle, onTry? } for any lock kind. onTry(state) after every counted try, so wrong tries can be saved
+// as they happen; a state that already has wrong tries for this puzzle shows its hints straight away.
+// onDone(stateWithLockRecorded) after the door opens.
+export function render(root, { state, puzzle, onTry = () => {} }, onDone) {
   let current = state;
   const kind = KINDS[puzzle.kind](puzzle.document);
   const wrongTries = () => current.locks.find((lock) => lock.puzzle === puzzle.id)?.wrongTries ?? 0;
 
-  const feedback = h("div", { class: "lock-feedback", id: "lock-feedback", role: "status", hidden: true });
+  // The feedback region stays in the page and only its text changes, so screen readers hear every try.
+  const result = h("p", { class: "lock-feedback-result", hidden: true });
+  const count = h("p", { hidden: true });
+  const feedback = h("div", { class: "lock-feedback", id: "lock-feedback", role: "status" }, result, count);
   const hints = h("ol", { class: "lock-hints", hidden: true });
   const how = h("button", { class: "button button-secondary button-block", type: "button", hidden: true, onclick: () => open(true) }, "Show me how");
   const form = h(
@@ -243,9 +249,24 @@ export function render(root, { state, puzzle }, onDone) {
     form,
   );
 
-  const say = (result, ...more) => {
-    feedback.hidden = false;
-    feedback.replaceChildren(h("p", { class: "lock-feedback-result" }, result), ...more.map((text) => h("p", {}, text)));
+  const say = (resultText) => {
+    const n = wrongTries();
+    result.textContent = resultText;
+    result.hidden = false;
+    count.textContent = n ? tries(n) : "";
+    count.hidden = !n;
+    kind.field?.setAttribute("aria-invalid", "true");
+    kind.field?.setAttribute("aria-describedby", "lock-feedback");
+  };
+
+  const showHints = () => {
+    const n = wrongTries();
+    hints.hidden = false;
+    hints.replaceChildren(
+      ...hintsToShow(current, puzzle).map((text, i) => hint(`Hint ${i + 1}`, text)),
+      ...(n < 4 ? [h("li", { class: "lock-hint-next" }, NEXT_HINT[n])] : []),
+    );
+    how.hidden = n < 4;
   };
 
   const open = (showedHow) => {
@@ -268,26 +289,19 @@ export function render(root, { state, puzzle }, onDone) {
 
   const attempt = () => {
     const { input, error } = kind.read();
-    if (error) {
-      say(error, ...(wrongTries() ? [tries(wrongTries())] : []));
-      kind.field?.setAttribute("aria-invalid", "true");
-      kind.field?.setAttribute("aria-describedby", "lock-feedback");
-      return;
-    }
+    if (error) return say(error);
     const correct = checkLock(puzzle, input);
     current = recordLockTry(current, puzzle.id, correct);
+    onTry(current);
     if (correct) return open(false);
-    const n = wrongTries();
-    say("Not yet. The door stays shut.", tries(n));
-    kind.field?.setAttribute("aria-invalid", "true");
-    kind.field?.setAttribute("aria-describedby", "lock-feedback");
-    hints.hidden = false;
-    hints.replaceChildren(
-      ...hintsToShow(current, puzzle).map((text, i) => hint(`Hint ${i + 1}`, text)),
-      ...(n < 4 ? [h("li", { class: "lock-hint-next" }, NEXT_HINT[n])] : []),
-    );
-    how.hidden = n < 4;
+    say("Not yet. The door stays shut.");
+    showHints();
   };
 
   show(root, main);
+  if (wrongTries()) {
+    count.textContent = tries(wrongTries());
+    count.hidden = false;
+    showHints();
+  }
 }

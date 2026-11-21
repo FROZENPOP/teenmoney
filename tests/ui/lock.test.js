@@ -72,7 +72,8 @@ for (const [kind, { puzzle, right, wrong, answer }] of Object.entries(KINDS)) {
 
   test(`${kind} lock: wrong tries count up, hints at 2 and 3, "Show me how" at 4`, () => {
     const l = lock(puzzle, answer);
-    assert.equal(l.feedback().hidden, true);
+    assert.equal(l.feedback().textContent, "");
+    assert.equal(l.feedback().hidden, false);
     l.try(wrong);
     assert.match(l.feedback().textContent, /1 wrong try so far/);
     assert.deepEqual(l.hints(), []);
@@ -110,4 +111,34 @@ test("spot and pick locks ask for an answer before trying, without counting a wr
     assert.ok(!l.feedback().hidden);
     assert.doesNotMatch(l.feedback().textContent, /wrong/);
   }
+});
+
+test("code lock: a leading minus gets its own message and does not count", () => {
+  const l = lock(payStub, KINDS.code.answer);
+  l.try("-98.08");
+  assert.equal(l.root.querySelector(".lock-feedback-result").textContent, "Leave out the minus sign.");
+  l.try(" -$98.08");
+  assert.equal(l.root.querySelector(".lock-feedback-result").textContent, "Leave out the minus sign.");
+  l.try("98.08");
+  l.root.querySelector("button").click();
+  assert.equal(l.done[0].locks[0].wrongTries, 0);
+});
+
+test("each counted try is reported, and a state with saved wrong tries shows their hints at once", () => {
+  const root = doc.createElement("div");
+  const tried = [];
+  render(root, { state: startGame(), puzzle: payStub, onTry: (s) => tried.push(s) }, () => {});
+  for (const text of ["1", "abc", "2", "3"]) {
+    root.querySelector(".lock-code-input").type(text);
+    root.querySelector("button[type=\"submit\"]").click();
+  }
+  assert.deepEqual(tried.map((s) => s.locks[0].wrongTries), [1, 2, 3]);
+
+  const resumed = doc.createElement("div");
+  render(resumed, { state: tried.at(-1), puzzle: payStub }, () => {});
+  assert.match(resumed.querySelector(".lock-feedback").textContent, /3 wrong tries so far/);
+  assert.equal(resumed.querySelectorAll(".lock-hint").length, 2);
+  resumed.querySelector(".lock-code-input").type("1");
+  resumed.querySelector("button[type=\"submit\"]").click();
+  assert.equal(resumed.querySelectorAll("button").find((b) => b.textContent === "Show me how").hidden, false);
 });

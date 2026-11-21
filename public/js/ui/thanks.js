@@ -2,40 +2,42 @@ import { score } from "../quiz/quiz.js";
 import { h, show } from "./dom.js";
 
 const SAVE_STATES = {
-  saving: { role: "status", title: "Saving your answers…", text: "This takes a second." },
-  saved: { role: "status", title: "Saved. Thanks for helping.", text: "You can close this page now." },
+  saving: { title: "Saving your answers…", text: "This takes a second." },
+  saved: { title: "Saved. Thanks for helping.", text: "You can close this page now." },
   error: {
-    role: "alert",
     title: "We couldn't save your answers.",
     text: "Check the wifi, then try again. Your answers stay on this device until they're saved.",
   },
 };
 
-// props: { questions, quizBefore, quizAfter, save, playAgain }. save() resolves to { ok } or { ok: false, error }.
-// onDone() when the player chooses to play again; the button only shows when playAgain is true.
-export function render(root, { questions, quizBefore, quizAfter, save, playAgain }, onDone) {
-  let status = h("section");
+// What to do after a failed save. The server's rate limit gets its own words; anything else is a connection problem.
+const errorText = (error) =>
+  error === "too many requests"
+    ? "Too many people saved from this network at once. Wait a minute, then try again. Your answers stay on this device until they're saved."
+    : SAVE_STATES.error.text;
 
-  const setState = (state) => {
-    const { role, title, text } = SAVE_STATES[state];
-    const retry = h("button", { class: "button button-block", type: "button", onclick: () => trySave() }, "Try again");
-    const next = h(
-      "section",
-      { class: "thanks-save", "data-state": state, role },
-      h("p", { class: "thanks-save-title" }, title),
-      h("p", {}, text),
-      state === "error" && retry,
-    );
-    const hadFocus = status.contains(document.activeElement);
-    status.replaceWith(next);
-    status = next;
-    if (state === "error" && hadFocus) retry.focus();
+// props: { questions, quizBefore, quizAfter, save }. save() resolves to { ok } or { ok: false, error }.
+// The study build has no replay, so onDone is never called. A failed save shows "Try again".
+export function render(root, { questions, quizBefore, quizAfter, save }) {
+  // One status region that stays in the page; only its text changes, so screen readers hear each change.
+  const title = h("p", { class: "thanks-save-title", tabindex: "-1" });
+  const text = h("p");
+  const retry = h("button", { class: "button button-block", type: "button", hidden: true, onclick: () => trySave() }, "Try again");
+  const status = h("section", { class: "thanks-save", role: "status" }, title, text, retry);
+
+  const setState = (state, error) => {
+    status.setAttribute("data-state", state);
+    title.textContent = SAVE_STATES[state].title;
+    text.textContent = state === "error" ? errorText(error) : SAVE_STATES[state].text;
+    retry.hidden = state !== "error";
   };
 
   const trySave = async () => {
+    const retrying = document.activeElement === retry;
     setState("saving");
     const result = await save();
-    setState(result.ok ? "saved" : "error");
+    setState(result.ok ? "saved" : "error", result.error);
+    if (retrying) (result.ok ? title : retry).focus();
   };
 
   const before = score(quizBefore);
@@ -47,7 +49,7 @@ export function render(root, { questions, quizBefore, quizAfter, save, playAgain
     h(
       "main",
       { class: "page thanks" },
-      h("header", {}, h("h1", {}, playAgain ? "Thanks for playing." : "Thanks for taking part.")),
+      h("header", {}, h("h1", {}, "Thanks for taking part.")),
       status,
       h(
         "dl",
@@ -91,8 +93,6 @@ export function render(root, { questions, quizBefore, quizAfter, save, playAgain
           }),
         ),
       ),
-      playAgain &&
-        h("div", { class: "thanks-actions" }, h("button", { class: "button button-secondary button-block", type: "button", onclick: () => onDone() }, "Play again")),
     ),
   );
   trySave();

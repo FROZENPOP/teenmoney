@@ -58,6 +58,14 @@ test("code lock matches lock-code.html after two wrong tries", async () => {
   matchesMockup(root, "lock-code");
 });
 
+// The lock feedback region stays in the page (empty) before the first try, so screen readers hear every change.
+// The spot and pick mockups show no try yet, so they lack it; it sits just before .lock-actions as in lock-code.html.
+function withFeedbackRegion(expected) {
+  const form = expected[2];
+  form.splice(form.length - 1, 0, ["div.lock-feedback"]);
+  return expected;
+}
+
 test("spot lock matches lock-spot.html with one line marked", async () => {
   const root = await draw("lock", { state: startGame(), puzzle: statement });
   root.querySelectorAll(".lock-spot-line")[1].click();
@@ -65,6 +73,7 @@ test("spot lock matches lock-spot.html with one line marked", async () => {
   // The mockup's lines are all charges; this statement starts with the paycheck, so its first amount is money-in.
   const expected = parseMockup("lock-spot");
   expected[2][1][3][2][1][1][3] = ["span.money.money-in"];
+  withFeedbackRegion(expected);
   matchesMockup(root, "lock-spot", expected);
   assert.equal(root.querySelectorAll(".lock-spot-mark").length, 1);
   assert.deepEqual(
@@ -79,7 +88,7 @@ test("pick lock matches lock-pick.html with two picks and keeps the tally", asyn
   const boxes = root.querySelectorAll(".lock-pick-check");
   boxes[0].click();
   boxes[3].click();
-  matchesMockup(root, "lock-pick");
+  matchesMockup(root, "lock-pick", withFeedbackRegion(parseMockup("lock-pick")));
   const cells = root.querySelectorAll(".doc-amount").map((td) => td.textContent);
   assert.deepEqual(cells, ["-$85.00", "+$80.00", "-$5.00"]);
   assert.equal(root.querySelector(".lock-pick-status").textContent, "Still $5.00 short.");
@@ -133,7 +142,6 @@ test("thanks matches thanks.html in the could-not-save state, with each answer's
     questions,
     quizBefore: questions.map((q, i) => (i < 3 ? q.correct : (q.correct + 1) % 4)),
     quizAfter: questions.map((q, i) => (i === 4 ? (q.correct + 1) % 4 : q.correct)),
-    playAgain: true,
     save: async () => ({ ok: false, error: "could not save" }),
   });
   await tick();
@@ -141,8 +149,45 @@ test("thanks matches thanks.html in the could-not-save state, with each answer's
   const expected = parseMockup("thanks");
   const answers = expected[4][2];
   for (const answer of answers.slice(1)) answer.splice(3, 0, ["p"]);
+  // No "Play again" in the study build (ARCHITECTURE.md 3.4).
+  assert.equal(expected.pop()[0], "div.thanks-actions");
   matchesMockup(root, "thanks", expected);
-  assert.equal(root.querySelector(".thanks-save").getAttribute("role"), "alert");
+  assert.equal(root.querySelector(".thanks-save").getAttribute("data-state"), "error");
+  assert.equal(root.querySelectorAll("button").map((b) => b.textContent).join(), "Try again");
   assert.equal(root.querySelector(".thanks-score-change").textContent, "+2 right");
   assert.equal(root.querySelectorAll(".thanks-answer")[0].children[2].textContent, questions[0].explain);
+});
+
+test("thanks keeps one status region, says a 429 in plain words, and Try again retries", async () => {
+  const results = [{ ok: false, error: "too many requests" }, { ok: true }];
+  const root = await draw("thanks", {
+    questions,
+    quizBefore: questions.map(() => 0),
+    quizAfter: questions.map(() => 0),
+    save: async () => results.shift(),
+  });
+  await tick();
+  const status = root.querySelector(".thanks-save");
+  assert.equal(status.getAttribute("role"), "status");
+  assert.equal(status.getAttribute("data-state"), "error");
+  assert.match(status.textContent, /Too many people saved from this network at once\. Wait a minute, then try again\./);
+  status.querySelector("button").click();
+  await tick();
+  assert.equal(root.querySelector(".thanks-save"), status, "the region is changed in place, not replaced");
+  assert.equal(status.getAttribute("data-state"), "saved");
+  assert.equal(status.querySelector("button").hidden, true);
+});
+
+test("finished screen uses the thanks markup and offers a new student", async () => {
+  let done = 0;
+  const root = await draw("finished", {}, () => done++);
+  assert.deepEqual(tree(root.children[0]).map((n) => (Array.isArray(n) ? n[0] : n)), ["main.page.thanks", "header", "section.thanks-save", "div.thanks-actions"]);
+  root.querySelector("button").click();
+  assert.equal(done, 1);
+});
+
+test("choice result focuses the consequence line, not the button", async () => {
+  const root = await draw("choice-result", { state: { ...week2, cash: 29250, mood: 6 }, prev: week2, event: brokenPhone, choiceIndex: 0 });
+  assert.equal(doc.activeElement, root.querySelector(".choice-result-line"));
+  assert.equal(doc.activeElement.getAttribute("tabindex"), "-1");
 });
