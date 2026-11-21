@@ -65,6 +65,11 @@
   --line: 2px;
   --line-heavy: 3px;
   --focus-ring: 3px;
+  --line-key: 4px;        /* bottom edge of a choice, like a key you press */
+  --line-press: 5px;      /* bottom edge of a button */
+  --line-mark: 6px;       /* highlighter edge of hints and the biggest hit, statement header bar */
+  --line-flag: 8px;       /* left edge of the save status */
+  --edge-paper: 10px;     /* check border, receipt teeth, stub punch row */
 
   /* Motion */
   --duration-quick: 120ms;

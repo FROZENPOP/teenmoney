@@ -10,7 +10,7 @@ This is the markup contract for the `screens` task. Reproduce the elements and c
 |---|---|---|
 | Page | `<main class="page {screen}">`. Add `page-wide` for payday, lock-spot and lock-pick. | |
 | Eyebrow | `<p class="eyebrow">Week 2 of 4, day 9</p>` | |
-| Money | Any amount gets `money`. Changes get `money-in` (+) or `money-out` (-). A balance below zero gets `money-negative`. | Text always carries the sign. Colour only repeats it. |
+| Money | Any amount gets `money`. Every change gets `money-in` (+) or `money-out` (-): choice prices, deductions on the stub, statement lines, receipt changes, pick amounts. A zero change (`$0.00`) and a balance get neither. A balance below zero gets `money-negative`. | Text always carries the sign. Colour only repeats it. An unavailable choice greys its price over `money-out`. |
 | Button | `<button class="button">`. Add `button-secondary` for the second action and `button-block` for full width on phones (auto width from 48rem). | hover, `:active`, `:disabled` / `aria-disabled="true"` (dashed), `:focus-visible` |
 | Field | `.field` > `label.field-label` + `input.field-input` + `p.field-hint` / `p.field-error` | `aria-invalid="true"` gives a heavy red border. Always pair it with a `field-error` message. |
 | Meters | See below | |
@@ -44,11 +44,12 @@ Meters:
 ### Quiz (`quiz.html`)
 `main.page.quiz` > `header.quiz-header` (eyebrow + `.quiz-progress` with `p.quiz-progress-text` "2 of 6" and `ol.quiz-progress-steps` of six `li`) + `form.quiz-form` > `fieldset.quiz-question` > `legend.quiz-question-text` + `.quiz-options` > `label.quiz-option` > `input.quiz-option-input[type=radio]` + `span.quiz-option-text`, then `button.button.button-block` "Next question".
 - Steps: `li.is-done`, `li.is-current`, `li` for the rest.
-- Option: hover. When its radio is checked the border is heavier and the text bold. The focus ring goes on the label (`:has(:focus-visible)`).
+- Option: hover wash only on devices that hover (`@media (hover: hover)`), so a tapped option on a phone never looks picked. When its radio is checked the border is heavier and the text bold. The focus ring goes on the label (`:has(:focus-visible)`).
 - The button stays disabled until an answer is picked.
 
 ### Payday (`payday.html`)
-`main.page.page-wide.payday` > `header.payday-header` + `.payday-paper` > `.payday-slot` (holds `article.payday-check.doc.doc-check` and `.payday-cashed`) + `section.payday-stub.doc.doc-stub`, then `.payday-actions` with "Cash this check" and a hidden "Start week 1".
+`main.page.page-wide.payday` > `header.payday-header` (eyebrow + `h1` + `p.lede`) + `.payday-paper` > `.payday-slot` (holds `article.payday-check.doc.doc-check` and `div.payday-cashed`) + `section.payday-stub.doc.doc-stub`, then `.payday-actions` with "Cash this check" and a hidden "Start week 1".
+- `div.payday-cashed[role=status]` holds `p.payday-cashed-title` "Cashed.", then the cash meter in the same `.meters` structure as every other screen, with the modifier `payday-cashed-meters` for one column and no frame (`dl.meters.payday-cashed-meters` > `div.meter.meter-cash` > `dt.meter-label` "Your cash" + `dd.meter-value` + `dd.meter-change.money-in`), then a `p` about keeping the stub.
 - Check parts, in order: `payday-check-payer`, `payday-check-meta`, `payday-check-payee` (with `label.payday-check-label` "Pay to the order of", `input.payday-check-name#payday-name`, `p.payday-check-name-hint` and a hidden `p.field-error`), `payday-check-amount` (with `span.payday-check-amount-sign`), `payday-check-words`, `payday-check-memo`, `payday-check-sign` (inline SVG signature), `payday-check-micr`.
 - States:
   - Empty name: on "Cash this check", show the `field-error` and set `aria-invalid="true"` on the input.
@@ -59,9 +60,18 @@ Meters:
 ### Choice (`choice.html`)
 `main.page.choice` > `header.choice-header` (eyebrow + meters) + `section.choice-event` (`p.choice-tag` "Surprise", only for surprises; `h1.choice-title`; `p.choice-body`) + `ul.choice-options` > `li` > `button.choice-option` > `span.choice-option-label` + `span.choice-option-price.money[.money-out|.money-in]`.
 - A choice paid from savings adds `span.choice-option-from` "from savings".
-- A choice whose `requires` is not met gets `disabled` plus `span.choice-option-reason` with the reason in plain words. It is shown, never hidden.
+- **Unavailable choice** (its `requires` is not met): shown, never hidden. Do not use the `disabled` attribute, which drops the button out of the Tab order so a keyboard user never hears why. Instead:
+  ```html
+  <button class="choice-option" type="button" aria-disabled="true" aria-describedby="choice-reason-2">
+    <span class="choice-option-label">Use your savings</span>
+    <span class="choice-option-price money money-out">-$120.00</span>
+    <span class="choice-option-from">from savings</span>
+    <span class="choice-option-reason" id="choice-reason-2">You have $60.00 saved. This needs $120.00.</span>
+  </button>
+  ```
+  It stays focusable and is styled as unavailable (dashed border, greyed text). Its click handler must do nothing. The reason id must be unique on the page, for example the choice index.
 - A zero-cost choice shows `$0.00` with no sign.
-- States: hover, active (pressed down 2px), focus ring, disabled (dashed).
+- States: hover (only on devices that hover), active (pressed down 2px), focus ring, `aria-disabled="true"` (dashed).
 
 ### Result of a choice (`choice-result.html`)
 `main.page.choice-result` > `header.choice-header` (eyebrow + meters, each changed meter with its `meter-change` and `is-up` / `is-down`; an unchanged one says "no change") + `section.choice-result-body[aria-live=polite]` > `p.choice-result-picked` + `p.choice-result-line`, then "Keep going".
@@ -77,16 +87,16 @@ Meters:
 The document is `article.lock-document.doc.doc-stub` with a `doc-table`. Its `tfoot` row `tr.lock-code-row` holds `label[for=lock-code-input]` "Total taken out" and `span.lock-code-entry` "$" + `input.lock-code-input[inputmode=decimal]`. A wrong try sets `aria-invalid="true"` on the input and `aria-describedby="lock-feedback"`.
 
 ### Lock: find the fee (`lock-spot.html`)
-The document is `article.lock-document.doc.doc-statement`. It contains `.lock-spot-summary` (starting balance), `.lock-spot-columns[aria-hidden]` (the column titles), `ol.lock-spot-lines` > `li` > `button.lock-spot-line[aria-pressed]` > `span.lock-spot-date` + description `span` (with `span.lock-spot-mark` "Marked") + `span.money.money-out` + `span.lock-spot-balance.money`, and `.lock-spot-summary` (ending balance). Then `p.lock-spot-choice[role=status]` repeats the marked line.
-- Only one line can be pressed at a time. Pressed: highlighter background, bold, "Marked" tag.
+The document is `article.lock-document.doc.doc-statement`. It contains `.lock-document-head`, `.lock-spot-summary` (starting balance), `div.lock-spot-table` > (`.lock-spot-columns[aria-hidden]` (the column titles) + `ol.lock-spot-lines` > `li` > `button.lock-spot-line[aria-pressed]` > `span.lock-spot-date` + description `span` (with `span.lock-spot-mark` "Marked") + `span.money.money-out` + `span.lock-spot-balance.money`), and `.lock-spot-summary` (ending balance). Then `p.lock-spot-choice[role=status]` repeats the marked line.
+- Only one line can be pressed at a time. Pressed: highlighter background, bold, "Marked" tag. Hover wash only on devices that hover.
 - The balance column shows from 40rem up.
 
 ### Lock: close the gap (`lock-pick.html`)
 `.lock-pick-layout` holds two parts:
-- `fieldset.lock-document.doc` > `.lock-pick-options` > `label.lock-pick-option` > `input.lock-pick-check[type=checkbox]` + `span.lock-pick-label` + `span.lock-pick-amount.money.money-in`, with an optional `span.lock-pick-note` (side effects such as "Mood -2").
+- `fieldset.lock-document.doc[aria-describedby=lock-pick-help]` > `legend.visually-hidden` + `.lock-document-head` (`h2.doc-title` + `p.doc-meta#lock-pick-help`) + `.lock-pick-options` > `label.lock-pick-option` > `input.lock-pick-check[type=checkbox]` + `span.lock-pick-label` + `span.lock-pick-amount.money.money-in`, with an optional `span.lock-pick-note` (side effects such as "Mood -2").
 - `section.lock-pick-tally.doc.doc-receipt[aria-live=polite]`. Its `doc-table` shows "Short by" (-), "Your N picks" (+) and "Day 30" in the `tfoot` (`money-negative` while below zero, `money-in` with + at zero or above), then `p.lock-pick-status`.
 
-The two parts sit side by side from 48rem. A checked option gets a ballpoint border, a wash and bold text.
+The two parts sit side by side from 48rem. A checked option gets a ballpoint border, a wash and bold text. The hover wash shows only on devices that hover.
 
 ### Results (`results.html`)
 `main.page.results` > `header.results-header` + `.results-top` > `section.results-ending[data-ending=broke|scraped|made-it|cushion]` (`h2.results-ending-title` + `p.results-ending-text`) + `section.results-hit` (`h2.results-hit-label`, `p.results-hit-what`, `p.results-hit-amount.money.money-out`). Then `article.results-receipt.doc.doc-receipt` > `.results-receipt-head` + `table.doc-table` + `p.results-receipt-foot`, and finally "Finish with 6 questions".
@@ -98,7 +108,7 @@ The two parts sit side by side from 48rem. A checked option gets a ballpoint bor
 `main.page.reading` > eyebrow + `article.reading-article.doc` > `h1` + `p`… (`reading.title`, `reading.paragraphs`), then "I've read it".
 
 ### Thanks (`thanks.html`)
-`main.page.thanks` > `h1` + `section.thanks-save[data-state]` + `dl.thanks-scores` > `div.thanks-score` > `dt.thanks-score-label` + `dd.thanks-score-value` (+ `dd.thanks-score-change.money-in`, signed) + `section` > `h2` + `ol.thanks-answers` > `li.thanks-answer` (`p.thanks-answer-question`, right answer, `p.thanks-answer-mark.is-right|.is-wrong` in words) + `.thanks-actions` > `button.button.button-secondary` "Play again".
+`main.page.thanks` > `header` > `h1`, then `section.thanks-save[data-state]` > `p.thanks-save-title` + `p` (what to do) + `button.button.button-block` "Try again" (error state only), then + `dl.thanks-scores` > `div.thanks-score` > `dt.thanks-score-label` + `dd.thanks-score-value` (+ `dd.thanks-score-change.money-in`, signed) + `section` > `h2` + `ol.thanks-answers` > `li.thanks-answer` (`p.thanks-answer-question`, right answer, `p.thanks-answer-mark.is-right|.is-wrong` in words) + `.thanks-actions` > `button.button.button-secondary` "Play again".
 - `thanks-save` states:
   - `saving`: `role=status`, "Saving your answers…", no button.
   - `saved`: green border, "Saved. Thanks for helping."

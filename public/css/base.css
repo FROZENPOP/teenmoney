@@ -118,7 +118,7 @@ a:hover { text-decoration-color: var(--ballpoint); }
   min-height: var(--tap);
   padding: var(--space-3) var(--space-5);
   border: var(--line) solid var(--payday-green-ink);
-  border-bottom: 5px solid var(--payday-green-press);
+  border-bottom: var(--line-press) solid var(--payday-green-press);
   border-radius: var(--radius-control);
   background: var(--payday-green-ink);
   color: var(--paper-white);
@@ -273,7 +273,7 @@ a:hover { text-decoration-color: var(--ballpoint); }
 
 /* The check: a guilloche border and fine rings, printed on paper white */
 .doc-check {
-  border: 10px solid transparent;
+  border: var(--edge-paper) solid transparent;
   background:
     repeating-radial-gradient(circle at 88% 30%, transparent 0 11px, var(--safety-paper) 11px 12px) padding-box,
     linear-gradient(var(--paper-white), var(--paper-white)) padding-box,
@@ -286,13 +286,13 @@ a:hover { text-decoration-color: var(--ballpoint); }
 .doc-stub::before {
   content: "";
   position: absolute;
-  inset: -6px 0 auto 0;
-  height: 10px;
-  background: radial-gradient(circle, var(--safety-paper) 3.5px, transparent 4px) 0 0 / 14px 10px repeat-x;
+  inset: calc(var(--edge-paper) * -0.6) 0 auto 0;
+  height: var(--edge-paper);
+  background: radial-gradient(circle, var(--safety-paper) 3.5px, transparent 4px) 0 0 / 14px var(--edge-paper) repeat-x;
 }
 
 /* The statement: a bank's ruled printout */
-.doc-statement { border-top: 6px solid var(--ballpoint); }
+.doc-statement { border-top: var(--line-mark) solid var(--ballpoint); }
 
 /* The receipt: narrow, with torn zig-zag ends */
 .doc-receipt {
@@ -301,20 +301,20 @@ a:hover { text-decoration-color: var(--ballpoint); }
   border-radius: 0;
   box-shadow: none;
   filter: drop-shadow(var(--shadow-receipt));
-  margin-block: 10px;
+  margin-block: var(--edge-paper);
 }
 .doc-receipt::before, .doc-receipt::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
-  height: 10px;
+  height: var(--edge-paper);
   background:
-    linear-gradient(135deg, var(--paper-white) 5px, transparent 5.5px) 0 0 / 10px 10px repeat-x,
-    linear-gradient(225deg, var(--paper-white) 5px, transparent 5.5px) 0 0 / 10px 10px repeat-x;
+    linear-gradient(135deg, var(--paper-white) 5px, transparent 5.5px) 0 0 / var(--edge-paper) var(--edge-paper) repeat-x,
+    linear-gradient(225deg, var(--paper-white) 5px, transparent 5.5px) 0 0 / var(--edge-paper) var(--edge-paper) repeat-x;
 }
-.doc-receipt::before { top: -10px; transform: scaleY(-1); }
-.doc-receipt::after { bottom: -10px; }
+.doc-receipt::before { top: calc(var(--edge-paper) * -1); transform: scaleY(-1); }
+.doc-receipt::after { bottom: calc(var(--edge-paper) * -1); }
 
 /* Text only screen readers hear */
 .visually-hidden {

@@ -48,11 +48,11 @@
       </button>
     </li>
     <li>
-      <button class="choice-option" type="button" disabled>
+      <button class="choice-option" type="button" aria-disabled="true" aria-describedby="choice-reason-2">
         <span class="choice-option-label">Use your savings</span>
-        <span class="choice-option-price money">-$120.00</span>
+        <span class="choice-option-price money money-out">-$120.00</span>
         <span class="choice-option-from">from savings</span>
-        <span class="choice-option-reason">You have $60.00 saved. This needs $120.00.</span>
+        <span class="choice-option-reason" id="choice-reason-2">You have $60.00 saved. This needs $120.00.</span>
       </button>
     </li>
   </ul>
