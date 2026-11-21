@@ -52,7 +52,7 @@ Each room is: two or three spending choices, one surprise, then the lock on the 
 
 | Week | Room | Choices and surprise | The lock |
 |---|---|---|---|
-| 1 | Payday | Split the paycheck into needs, wants, savings. A friend invites you to a concert. | **Read the pay stub** (`code`). The door code is your take-home pay, worked out from gross pay and the deductions. |
+| 1 | Payday | Split the paycheck into needs, wants, savings. A friend invites you to a concert. | **Read the pay stub** (`code`). The door code is the total taken out of your pay, added up from the deductions on the stub. (Not take-home pay: the check and the cash meter already show that.) |
 | 2 | Bills | Phone bill and transport come due. Your phone screen cracks. | **Find the fee** (`spot`). A bank statement has one charge that shouldn't be there. Tap it. |
 | 3 | Temptation | The thing you've wanted goes on sale. A "buy now, pay later" offer appears. | **True cost** (`code`). Two ways to pay for the same item. Enter how much more the pay-later plan costs. |
 | 4 | The squeeze | Your hours get cut. A group gift is due. | **Close the gap** (`pick`). You're short for the last week. Choose the set of cuts and extra shifts that reaches day 30 at $0 or better. |
@@ -196,11 +196,11 @@ puzzle = {
   id: "pay-stub",
   week: 1,
   kind: "code",                   // "code" | "spot" | "pick"
-  prompt: "The door code is your take-home pay.",
+  prompt: "The door code is how much was taken out of your pay.",
   document: { ... },              // the lines shown; shape depends on kind
-  answer: 62192,                  // code: cents. spot: line id. pick: sorted array of option ids
-  hints: ["Start with gross pay.", "Subtract every deduction on the stub."],
-  explain: "720.00 - 43.00 - 44.64 - 10.44 = 621.92"
+  answer: 9808,                   // code: cents. spot: line id. pick: sorted array of option ids
+  hints: ["Look at the lines with a minus sign.", "Add up all three deductions."],
+  explain: "43.00 + 44.64 + 10.44 = 98.08. You earned $720.00 and $621.92 reached you."
 }
 ```
 
@@ -330,7 +330,7 @@ Ruled out: dark neon "gamer" styling, banking-app rounded cards, padlock-and-sto
 | Screen | What's on it |
 |---|---|
 | Quiz | One question at a time, progress shown as "2 of 6". Used before and after. |
-| Payday | The paycheck fills the page. Type a name on the "Pay to" line, then "Cash this check" tears the stub off. This is the one large animation. |
+| Payday | The paycheck fills the page, made out for the take-home amount, $621.92. Type a name on the "Pay to" line, then "Cash this check" tears the stub off. This is the one large animation. The stub's deductions are not shown here; they are the week 1 lock. |
 | Choice | Week and day, the three meters, the event, and each choice with its price on the button. |
 | Result of a choice | One line of consequence and the meters reacting, then "Keep going". |
 | Lock | The document, the prompt, the input for that kind of lock, "Try the door", hints as they unlock. |
@@ -342,14 +342,14 @@ Ruled out: dark neon "gamer" styling, banking-app rounded cards, padlock-and-sto
 Choice                                              Lock
 +----------------------------------------------+    +----------------------------------------------+
 | Week 2 of 4, day 9                           |    | Week 1 door                                  |
-| $412.50 cash   $60 saved   Mood: okay        |    | The code is your take-home pay.              |
+| $412.50 cash   $60 saved   Mood: okay        |    | The code is how much was taken out.          |
 |                                              |    | +------------------------------------------+ |
 | Your phone screen cracks                     |    | | Pay stub                                 | |
 | It still turns on, but half the screen is    |    | | Hours 60 x $12.00            $720.00     | |
 | dead.                                        |    | | Federal tax                  -$43.00     | |
 |                                              |    | | Social Security              -$44.64     | |
 | [ Fix it now            -$120 ]              |    | | Medicare                     -$10.44     | |
-| [ Live with it             $0 ]              |    | | Take-home                  $ [ _ _ _ ]   | |
+| [ Live with it             $0 ]              |    | | Total taken out            $ [ _ _ _ ]   | |
 | [ Use your savings      -$120 ]              |    | +------------------------------------------+ |
 +----------------------------------------------+    | [ Try the door ]                             |
                                                     +----------------------------------------------+
