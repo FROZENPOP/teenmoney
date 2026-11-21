@@ -28,6 +28,12 @@ test("11. save resolves { ok: false, error } and never rejects", async () => {
   globalThis.fetch = async () => new Response('{"ok":false,"error":"could not save"}', { status: 500 });
   assert.deepEqual(await save({}), { ok: false, error: "could not save" });
 
+  globalThis.fetch = async () => new Response('{"ok":false,"error":"quizAfter must be 6 integers from 0 to 3"}', { status: 400 });
+  assert.deepEqual(await save({}), { ok: false, error: "quizAfter must be 6 integers from 0 to 3" });
+
+  globalThis.fetch = async () => new Response('{"ok":false,"error":"too large"}', { status: 413 });
+  assert.deepEqual(await save({}), { ok: false, error: "too large" });
+
   globalThis.fetch = async () => new Response("<html>bad gateway</html>", { status: 502 });
   assert.deepEqual(await save({}), { ok: false, error: "the server answered 502" });
 });
