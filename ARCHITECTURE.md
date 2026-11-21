@@ -206,6 +206,21 @@ puzzle = {
 
 A choice whose `requires` is not met is shown disabled with the reason, not hidden.
 
+Puzzle `document` shapes, by puzzle (set by task `rooms`):
+
+```js
+// pay-stub (code): the stub lines
+document: { lines: [{ label, amount }] }                       // amount in signed cents
+// true-cost (code): two ways to pay, side by side
+document: { options: [{ label, lines: [{ label, amount }] }], answerLabel }
+// find-the-fee (spot): a bank statement; input is a line id
+document: { lines: [{ id, date, description, amount }] }
+// close-the-gap (pick): input is an array of option ids; only the exact set opens, in any order
+document: { shortfall, options: [{ id, label, amount, mood }] }
+```
+
+Any `document` may also carry optional `title` and `meta` strings; a screen shows them when present and leaves the line out when not.
+
 ### 3.3 Quiz and session record: `public/js/quiz/`
 
 ```js

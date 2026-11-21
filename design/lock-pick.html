@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lock: close the gap · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page page-wide lock lock-pick">
+  <header class="lock-header">
+    <p class="eyebrow">Week 4 door</p>
+    <h1 class="lock-prompt">You're $85.00 short of day 30. Pick the cuts and extra shifts that close the gap.</h1>
+  </header>
+
+  <form class="lock-form">
+    <div class="lock-pick-layout">
+      <fieldset class="lock-document doc" aria-describedby="lock-pick-help">
+        <legend class="visually-hidden">Cuts and extra shifts</legend>
+        <div class="lock-document-head">
+          <h2 class="doc-title">Last week, on paper</h2>
+          <p class="doc-meta" id="lock-pick-help">Pick as many as you like.</p>
+        </div>
+        <div class="lock-pick-options">
+          <label class="lock-pick-option">
+            <input class="lock-pick-check" type="checkbox" name="pick" value="skip-movie" checked>
+            <span class="lock-pick-label">Skip movie night</span>
+            <span class="lock-pick-amount money money-in">+$18.00</span>
+          </label>
+          <label class="lock-pick-option">
+            <input class="lock-pick-check" type="checkbox" name="pick" value="pack-lunch">
+            <span class="lock-pick-label">Pack lunch instead of buying it</span>
+            <span class="lock-pick-amount money money-in">+$12.00</span>
+          </label>
+          <label class="lock-pick-option">
+            <input class="lock-pick-check" type="checkbox" name="pick" value="sell-sneakers">
+            <span class="lock-pick-label">Sell your old sneakers</span>
+            <span class="lock-pick-amount money money-in">+$35.00</span>
+          </label>
+          <label class="lock-pick-option">
+            <input class="lock-pick-check" type="checkbox" name="pick" value="extra-shift" checked>
+            <span class="lock-pick-label">Pick up a Saturday shift</span>
+            <span class="lock-pick-amount money money-in">+$62.00</span>
+            <span class="lock-pick-note">Take-home for 6 hours</span>
+          </label>
+          <label class="lock-pick-option">
+            <input class="lock-pick-check" type="checkbox" name="pick" value="skip-gift">
+            <span class="lock-pick-label">Leave the group gift</span>
+            <span class="lock-pick-amount money money-in">+$25.00</span>
+            <span class="lock-pick-note">Mood -2. Your friends will notice.</span>
+          </label>
+        </div>
+      </fieldset>
+
+      <section class="lock-pick-tally doc doc-receipt" aria-labelledby="lock-pick-tally-title" aria-live="polite">
+        <h2 class="doc-title" id="lock-pick-tally-title">Running total</h2>
+        <table class="doc-table">
+          <tbody>
+            <tr><th scope="row">Short by</th><td class="doc-amount money money-out">-$85.00</td></tr>
+            <tr><th scope="row">Your 2 picks</th><td class="doc-amount money money-in">+$80.00</td></tr>
+          </tbody>
+          <tfoot>
+            <tr><th scope="row">Day 30</th><td class="doc-amount money money-negative">-$5.00</td></tr>
+          </tfoot>
+        </table>
+        <p class="lock-pick-status">Still $5.00 short.</p>
+      </section>
+    </div>
+
+    <div class="lock-actions">
+      <button class="button button-block" type="submit">Try the door</button>
+    </div>
+  </form>
+</main>
+</body>
+</html>

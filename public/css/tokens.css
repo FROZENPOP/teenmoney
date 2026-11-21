@@ -1,0 +1,96 @@
+/* TeenMoney design tokens. Every colour, size, space and motion used anywhere comes from here.
+   Tints and shades are the six palette hues mixed with Ballpoint or Paper white; no other hues. */
+
+:root {
+  /* The six palette colours (ARCHITECTURE.md section 4) */
+  --safety-paper: #DDEFE3;
+  --paper-white: #FBFDFB;
+  --ballpoint: #14233B;
+  --payday-green: #0E8A5F;
+  --overdraft-red: #D7263D;
+  --highlighter: #FFE14D;
+
+  /* Shades for text: the raw green and red are under 4.5:1 on Safety paper */
+  --payday-green-ink: #106B54;     /* green 70% + ballpoint 30% */
+  --payday-green-press: #0E5C48;   /* green 55% + ballpoint 45%, pressed button */
+  --overdraft-red-ink: #B0253D;    /* red 80% + ballpoint 20% */
+  --ballpoint-soft: #4E5A6B;       /* ballpoint 75% + paper white 25%, secondary text */
+
+  /* Tints for surfaces and lines */
+  --safety-paper-deep: #C4E3D3;    /* safety paper 88% + green 12%, page pattern and rules */
+  --safety-paper-line: #9FD1BB;    /* safety paper 70% + green 30%, check border pattern */
+  --payday-green-wash: #CCE6DC;    /* paper white 80% + green 20%, money-in flash */
+  --overdraft-red-wash: #F4D2D5;   /* paper white 80% + red 20%, money-out flash */
+  --highlighter-wash: #FFF3B0;     /* highlighter 50% + paper white 50%, hint background */
+  --rule: #8A94A3;                 /* ballpoint 50% + paper white 50%, hairlines on documents */
+  --shadow-paper: 0 1px 0 rgb(20 35 59 / 0.08), 0 6px 18px -8px rgb(20 35 59 / 0.28); /* ballpoint */
+  --shadow-receipt: 0 4px 8px rgb(20 35 59 / 0.18);
+  --shadow-lift: 0 18px 30px -12px rgb(20 35 59 / 0.35);
+
+  /* Type */
+  --font-display: "Bricolage Grotesque", "Arial Narrow", system-ui, sans-serif;
+  --font-body: "Atkinson Hyperlegible", Verdana, system-ui, sans-serif;
+  --text-xs: 0.875rem;   /* 14px: document fine print */
+  --text-sm: 1rem;       /* 16px: labels */
+  --text-md: 1.125rem;   /* 18px: body */
+  --text-lg: 1.375rem;   /* 22px: event body, receipt totals */
+  --text-xl: 1.75rem;    /* 28px: headings */
+  --text-2xl: 2.25rem;   /* 36px: big amounts */
+  --text-3xl: clamp(2.75rem, 2rem + 4vw, 4.5rem); /* 44-72px: the check amount */
+  --leading-tight: 1.15;
+  --leading-body: 1.5;
+  --weight-regular: 400;
+  --weight-bold: 700;
+  --weight-display: 650;
+  --weight-heavy: 800;
+
+  /* Space (4px steps) */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4rem;
+  --gutter: 1rem;          /* page side gutter at 360px */
+  --measure: 40rem;        /* the single column */
+  --measure-wide: 54rem;   /* documents: the check, the receipt, the statement */
+  --tap: 3rem;             /* smallest tap target */
+
+  /* Shape */
+  --radius-paper: 2px;
+  --radius-control: 4px;
+  --line-hair: 1px;
+  --line: 2px;
+  --line-heavy: 3px;
+  --focus-ring: 3px;
+  --line-key: 4px;        /* bottom edge of a choice, like a key you press */
+  --line-press: 5px;      /* bottom edge of a button */
+  --line-mark: 6px;       /* highlighter edge of hints and the biggest hit, statement header bar */
+  --line-flag: 8px;       /* left edge of the save status */
+  --edge-paper: 10px;     /* check border, receipt teeth, stub punch row */
+
+  /* Motion */
+  --duration-quick: 120ms;
+  --duration-flash: 900ms;
+  --duration-count: 700ms;
+  --duration-tear: 950ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in: cubic-bezier(0.55, 0, 0.8, 0.2);
+}
+
+@media (min-width: 48rem) {
+  :root { --gutter: 2rem; }
+}
+
+/* The tear, the count and the flash become instant. demo.js and the real screens read
+   --duration-count, so the number jumps straight to its new value. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-quick: 0ms;
+    --duration-flash: 0ms;
+    --duration-count: 0ms;
+    --duration-tear: 0ms;
+  }
+}

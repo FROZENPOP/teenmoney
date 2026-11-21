@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payday · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page page-wide payday">
+  <header class="payday-header">
+    <p class="eyebrow">Day 1 of 30 · Payday</p>
+    <h1>Your first paycheck.</h1>
+    <p class="lede">Four weeks of smoothie shifts, on one piece of paper. Make it last until day 30.</p>
+  </header>
+
+  <div class="payday-paper">
+    <div class="payday-slot">
+      <article class="payday-check doc doc-check" aria-label="Paycheck">
+        <p class="payday-check-payer"><strong>Blend Street Smoothies</strong><span>Shift pay · Weeks 1 to 4</span></p>
+        <p class="payday-check-meta">No. 0001<br>Day 1</p>
+        <div class="payday-check-payee">
+          <label class="payday-check-label" for="payday-name">Pay to the order of</label>
+          <input class="payday-check-name" id="payday-name" name="name" type="text" autocomplete="off" maxlength="24" aria-describedby="payday-name-hint payday-name-error">
+          <p class="payday-check-name-hint" id="payday-name-hint">Your first name. It stays on this device.</p>
+          <p class="field-error" id="payday-name-error" hidden>Write a name on the line first.</p>
+        </div>
+        <p class="payday-check-amount money" aria-label="621 dollars and 92 cents"><span class="payday-check-amount-sign">$</span>621.92</p>
+        <p class="payday-check-words">Six hundred twenty-one and 92/100 dollars</p>
+        <p class="payday-check-memo"><span>Memo</span>Make it last 30 days</p>
+        <p class="payday-check-sign">
+          <svg viewBox="0 0 220 44" fill="none" aria-hidden="true"><path d="M6 32c10-20 20-26 22-14s-6 20 2 12 12-20 18-14-4 18 4 14 10-14 16-10 2 12 10 8 8-10 14-8 4 8 10 6 12-8 20-8 14 4 24 2 18-6 30-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span>Shift manager</span>
+        </p>
+        <p class="payday-check-micr" aria-hidden="true">|:0612440|: 0001</p>
+      </article>
+
+      <div class="payday-cashed" role="status">
+        <p class="payday-cashed-title">Cashed.</p>
+        <dl class="meters payday-cashed-meters">
+          <div class="meter meter-cash" data-demo-meter>
+            <dt class="meter-label">Your cash</dt>
+            <dd class="meter-value" data-demo-count data-from="0" data-to="62192">$621.92</dd>
+            <dd class="meter-change money-in">+$621.92</dd>
+          </div>
+        </dl>
+        <p>Keep the stub. You'll need it to get out of week 1.</p>
+      </div>
+    </div>
+
+    <section class="payday-stub doc doc-stub" aria-labelledby="payday-stub-title">
+      <div class="payday-stub-head">
+        <h2 class="doc-title" id="payday-stub-title">Pay stub</h2>
+        <p class="payday-stub-keep">Keep this part</p>
+      </div>
+      <table class="doc-table">
+        <tbody>
+          <tr><th scope="row">Hours worked</th><td class="doc-amount money">60</td></tr>
+          <tr><th scope="row">Pay per hour</th><td class="doc-amount money">$12.00</td></tr>
+          <tr><th scope="row">Gross pay</th><td class="doc-amount money">$720.00</td></tr>
+          <tr><th scope="row">Taxes taken out</th><td class="doc-amount">3 kinds</td></tr>
+        </tbody>
+      </table>
+    </section>
+  </div>
+
+  <div class="payday-actions">
+    <button class="button button-block" type="button" data-demo-tear>Cash this check</button>
+    <button class="button button-block" type="button" data-demo-after hidden>Start week 1</button>
+  </div>
+</main>
+<script src="demo.js"></script>
+</body>
+</html>
