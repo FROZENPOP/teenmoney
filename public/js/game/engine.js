@@ -38,9 +38,16 @@ export function applyChoice(state, event, choiceIndex) {
   };
 }
 
+// code: input is cents. spot: input is a line id. pick: input is an array of option ids, any order.
+// pick accepts only the exact answer, not any set that closes the gap: otherwise ticking every option opens the door
+// and the lock no longer asks for the cheapest way out.
 export function checkLock(puzzle, input) {
-  if (puzzle.kind !== "code") throw new Error("lock kind not supported yet");
-  return Number.isInteger(input) && input === puzzle.answer;
+  if (puzzle.kind === "code") return Number.isInteger(input) && input === puzzle.answer;
+  if (puzzle.kind === "spot") return typeof input === "string" && input === puzzle.answer;
+  if (puzzle.kind === "pick") {
+    return Array.isArray(input) && input.length === puzzle.answer.length && [...input].sort().every((id, i) => id === puzzle.answer[i]);
+  }
+  throw new Error(`unknown lock kind "${puzzle.kind}"`);
 }
 
 export function recordLockTry(state, puzzleId, correct) {
