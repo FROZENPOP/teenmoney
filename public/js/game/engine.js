@@ -87,9 +87,9 @@ export function ending(state) {
   return "cushion";
 }
 
-// The entry with the largest real cash cost. Cash moved into savings is not lost, so it does not count.
-// Returns null when nothing cost cash.
-const realCost = (entry) => entry.cash + Math.max(0, entry.savings);
+// The entry that cost the most: the drop in cash + savings. Moving cash into savings costs nothing; paying from
+// savings counts like paying in cash. Returns null when nothing cost anything.
+const realCost = (entry) => entry.cash + (entry.savings ?? 0);
 export function biggestHit(state) {
   return state.log.reduce((worst, entry) => (realCost(entry) < (worst ? realCost(worst) : 0) ? entry : worst), null);
 }
