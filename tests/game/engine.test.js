@@ -120,6 +120,11 @@ test("8. biggestHit and formatMoney", () => {
   state = nextWeek(state);
   assert.equal(biggestHit(state).label, "Spend");
   assert.equal(biggestHit(startGame()), null);
+
+  const save = { id: "save", week: 1, day: 2, choices: [{ label: "Save $100", cash: -10000, savings: 10000 }] };
+  const saver = nextWeek(applyChoice(startGame(), save, 0));
+  assert.equal(biggestHit(saver).label, "Lunches", "a move into savings is not a hit");
+  assert.equal(biggestHit(applyChoice(startGame(), save, 0)), null, "only savings moves: no hit");
   assert.equal(formatMoney(41250), "$412.50");
   assert.equal(formatMoney(-12000), "-$120.00");
   assert.equal(formatMoney(0), "$0.00");

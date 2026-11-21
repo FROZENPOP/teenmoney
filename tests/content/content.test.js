@@ -107,3 +107,22 @@ test("no choice result gives away a door code", () => {
     for (const code of codes.flat()) assert.ok(!c.result.includes(code), c.result);
   }
 });
+
+test("the week 2 and week 4 locks are examples about Jordan", () => {
+  for (const id of ["find-the-fee", "close-the-gap"]) {
+    const p = puzzles.find((x) => x.id === id);
+    assert.match(p.prompt, /Jordan/, id);
+    assert.match(p.document.title, /^Jordan/, id);
+  }
+});
+
+test("every employer name in content is Blend Street Smoothies", () => {
+  const text = JSON.stringify([events, puzzles]);
+  assert.ok(!/smoothie spot/i.test(text));
+  assert.equal(text.match(/smoothies?\b/gi)?.length, text.match(/Blend Street Smoothies/g)?.length);
+  assert.match(puzzles.find((p) => p.id === "find-the-fee").document.lines[0].description, /^Blend Street Smoothies/);
+});
+
+test("the week 2 lock says the first step is to contact the bank or the company", () => {
+  assert.match(puzzles.find((p) => p.id === "find-the-fee").explain, /contact the bank or/);
+});
