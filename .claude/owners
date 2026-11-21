@@ -1,0 +1,2 @@
+skeleton public/index.html public/js/* worker/* tests/*
+ui-design public/css/* public/fonts/* design/*
