@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
+import { events } from "../../public/js/content/events.js";
 import { puzzles } from "../../public/js/content/puzzles.js";
 import {
   applyChoice,
@@ -120,6 +121,16 @@ test("8. biggestHit and formatMoney", () => {
   state = nextWeek(state);
   assert.equal(biggestHit(state).label, "Spend");
   assert.equal(biggestHit(startGame()), null);
+
+  const save = { id: "save", week: 1, day: 2, choices: [{ label: "Save $100", cash: -10000, savings: 10000 }] };
+  const saver = nextWeek(applyChoice(startGame(), save, 0));
+  assert.equal(biggestHit(saver).label, "Lunches", "a move into savings is not a hit");
+
+  const phone = events.find((e) => e.id === "broken-phone");
+  const repaired = nextWeek(applyChoice({ ...saver, savings: 12000 }, phone, 2));
+  assert.equal(biggestHit(repaired).label, "Use your savings", "a $120 repair paid from savings is a hit");
+  assert.equal(biggestHit(repaired).savings, -12000);
+  assert.equal(biggestHit(applyChoice(startGame(), save, 0)), null, "only savings moves: no hit");
   assert.equal(formatMoney(41250), "$412.50");
   assert.equal(formatMoney(-12000), "-$120.00");
   assert.equal(formatMoney(0), "$0.00");
