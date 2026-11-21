@@ -1,5 +1,5 @@
 // One endpoint: POST /api/sessions (ARCHITECTURE.md 3.5). Static files in public/ are served before this runs.
-// Nothing about the sender is read, stored or logged: the only headers read are Content-Length and Content-Type.
+// Nothing about the sender is stored or logged. Headers read: Content-Length, and cf-connecting-ip as the rate-limit key only.
 
 const MAX_BYTES = 8192;
 const ENDINGS = ["broke", "scraped", "made-it", "cushion"];
@@ -13,6 +13,9 @@ const INSERT = `INSERT INTO sessions
   (id, created_at, class_code, study_group, quiz_before, quiz_after,
    ending, final_cash, final_savings, final_mood, choices, locks)
   VALUES (?1, ?2, ?3, ?4, ?5, ?6, ?7, ?8, ?9, ?10, ?11, ?12)`;
+
+// Rounded down to the hour, so finishing order cannot identify a student.
+const hourNow = () => new Date(Math.floor(Date.now() / 3600000) * 3600000).toISOString();
 
 // Reads at most MAX_BYTES of the body; returns null as soon as it is longer, without reading the rest.
 async function readBody(request) {
@@ -89,6 +92,12 @@ export default {
     if (new URL(request.url).pathname !== "/api/sessions") return reply(404, { ok: false, error: "not found" });
     if (request.method !== "POST") return reply(405, { ok: false, error: "method not allowed" });
 
+    // The connecting IP is only the counting key for the limiter; it is never stored or logged.
+    if (env.SAVE_LIMIT) {
+      const { success } = await env.SAVE_LIMIT.limit({ key: request.headers.get("cf-connecting-ip") ?? "unknown" });
+      if (!success) return reply(429, { ok: false, error: "too many requests" });
+    }
+
     const text = await readBody(request);
     if (text === null) return reply(413, { ok: false, error: "too large" });
 
@@ -106,7 +115,7 @@ export default {
       await env.DB.prepare(INSERT)
         .bind(
           crypto.randomUUID(),
-          new Date().toISOString(),
+          hourNow(),
           body.classCode ?? null,
           body.studyGroup,
           JSON.stringify(body.quizBefore),

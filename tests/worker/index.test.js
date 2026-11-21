@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync, readdirSync } from "node:fs";
 import { join } from "node:path";
-import { test } from "node:test";
+import { mock, test } from "node:test";
 import worker from "../../worker/index.js";
 
 const URL = "https://teenmoney.test/api/sessions";
@@ -33,6 +33,11 @@ function fakeDb({ fail = false } = {}) {
   };
 }
 
+function fakeLimit(success) {
+  const keys = [];
+  return { keys, limit: async ({ key }) => (keys.push(key), { success }) };
+}
+
 const post = (body, env = { DB: fakeDb() }) => worker.fetch(new Request(URL, { method: "POST", body }), env);
 
 async function expect400(body, field) {
@@ -56,7 +61,7 @@ test("6. valid play body: 201 and one insert, every value bound", async () => {
   assert.equal(sql.match(/\?\d+/g).length, 12);
   assert.doesNotMatch(sql, /P3-TUE|scraped|3750|concert|pay-stub/, "values are bound, not in the SQL");
   assert.match(values[0], /^[0-9a-f-]{36}$/);
-  assert.ok(!Number.isNaN(Date.parse(values[1])));
+  assert.match(values[1], /^\d{4}-\d\d-\d\dT\d\d:00:00\.000Z$/);
   assert.deepEqual(values.slice(2), [
     "P3-TUE", "play", "[0,2,1,3,0,1]", "[1,2,1,3,2,1]", "scraped", 3750, 0, 4,
     '[{"event":"concert","choice":1}]', '[{"puzzle":"pay-stub","wrongTries":1,"hintUsed":false}]',
@@ -266,7 +271,7 @@ test("9. 500 with exactly 'could not save' when the database throws", async () =
   assert.deepEqual(await second.json(), { ok: false, error: "could not save" });
 });
 
-test("10. the Worker reads only url, method, body and two headers from the request", async () => {
+test("10. the Worker reads only url, method, body, content-length and the rate-limit key", async () => {
   const real = new Request(URL, { method: "POST", body: JSON.stringify(validPlay()), headers: { "User-Agent": "x", Cookie: "a=1", "CF-Connecting-IP": "1.2.3.4" } });
   const touched = new Set();
   const asked = [];
@@ -278,10 +283,12 @@ test("10. the Worker reads only url, method, body and two headers from the reque
     },
   });
   const DB = fakeDb();
-  const response = await worker.fetch(request, { DB });
+  const SAVE_LIMIT = fakeLimit(true);
+  const response = await worker.fetch(request, { DB, SAVE_LIMIT });
   assert.equal(response.status, 201);
   assert.deepEqual([...touched].filter((p) => !["url", "method", "headers", "body"].includes(p)), []);
-  assert.deepEqual(asked.filter((n) => n !== "content-length" && n !== "content-type"), []);
+  assert.deepEqual(asked.filter((n) => !["content-length", "content-type"].includes(n)), ["cf-connecting-ip"], "the IP is read once, as the key");
+  assert.deepEqual(SAVE_LIMIT.keys, ["1.2.3.4"]);
   assert.doesNotMatch(JSON.stringify(DB.calls[0].values), /1\.2\.3\.4|a=1/);
 });
 
@@ -294,8 +301,46 @@ test("10. no file reads other headers or calls console", () => {
     const source = readFileSync(file, "utf8");
     assert.doesNotMatch(source, /\bconsole\./, file);
     for (const [, name] of source.matchAll(/headers\.get\(\s*["'`]([^"'`]*)/g)) {
-      assert.ok(["content-length", "content-type"].includes(name.toLowerCase()), `${file} reads header ${name}`);
+      assert.ok(["content-length", "content-type", "cf-connecting-ip"].includes(name.toLowerCase()), `${file} reads header ${name}`);
     }
     assert.doesNotMatch(source, /headers\.get\(\s*[^"'`\s]/, `${file} reads a header by variable`);
+  }
+});
+
+test("rate limit: 429 before the body is read, nothing saved", async () => {
+  let pulled = 0;
+  const body = new ReadableStream({ pull: (controller) => { pulled++; controller.enqueue(new TextEncoder().encode(JSON.stringify(validRead()))); controller.close(); } }, { highWaterMark: 0 });
+  const DB = fakeDb();
+  const SAVE_LIMIT = fakeLimit(false);
+  const request = new Request(URL, { method: "POST", headers: { "CF-Connecting-IP": "203.0.113.7" }, body, duplex: "half" });
+  const response = await worker.fetch(request, { DB, SAVE_LIMIT });
+  assert.equal(response.status, 429);
+  assert.deepEqual(await response.json(), { ok: false, error: "too many requests" });
+  assert.deepEqual(SAVE_LIMIT.keys, ["203.0.113.7"]);
+  assert.equal(DB.calls.length, 0);
+  assert.equal(pulled, 0, "body not read");
+});
+
+test("rate limit: key is \"unknown\" without the header; allowed requests save; no binding skips the check", async () => {
+  const SAVE_LIMIT = fakeLimit(true);
+  const DB = fakeDb();
+  assert.equal((await post(JSON.stringify(validRead()), { DB, SAVE_LIMIT })).status, 201);
+  assert.deepEqual(SAVE_LIMIT.keys, ["unknown"]);
+  assert.equal(DB.calls.length, 1);
+  assert.equal((await post(JSON.stringify(validRead()), { DB: fakeDb() })).status, 201);
+});
+
+test("created_at is rounded down to the hour", async (t) => {
+  t.after(() => mock.timers.reset());
+  for (const [now, stored] of [
+    ["2026-11-21T16:47:31.123Z", "2026-11-21T16:00:00.000Z"],
+    ["2026-11-21T16:00:00.000Z", "2026-11-21T16:00:00.000Z"],
+    ["2026-11-21T23:59:59.999Z", "2026-11-21T23:00:00.000Z"],
+  ]) {
+    mock.timers.enable({ apis: ["Date"], now: Date.parse(now) });
+    const DB = fakeDb();
+    assert.equal((await post(JSON.stringify(validRead()), { DB })).status, 201);
+    assert.equal(DB.calls[0].values[1], stored, now);
+    mock.timers.reset();
   }
 });
