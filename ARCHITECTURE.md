@@ -67,7 +67,7 @@ Lock rules:
 
 | Meter | Range | Notes |
 |---|---|---|
-| Cash | any, in cents | Below 0 means the player has borrowed. Borrowed money is repaid at the next week change with a 10% fee. |
+| Cash | any, in cents | Below 0 means the player has borrowed. Each week change charges a fee of 10% of the amount below zero. |
 | Savings | 0 or more, in cents | Can be spent by choices that say so. |
 | Mood | 0 to 10 | Starts at 5. Clamped to the range. |
 
@@ -77,7 +77,7 @@ Placeholders to tune in the pilot. All money is stored in whole cents.
 
 - Job: smoothie shop, $12.00/hour, 15 hours/week, 60 hours in the month. Gross $720.00.
 - Deductions on the stub: federal tax $43.00 (placeholder, check before the test), Social Security 6.2% = $44.64, Medicare 1.45% = $10.44. Take-home **$621.92**.
-- Fixed costs charged across the month: phone $45, transport $60, lunches $80.
+- Fixed costs: lunches $20 and transport $15 at the end of every week, phone $45 at the end of week 2. $185 over the month.
 - Surprise sizes: $40 to $250.
 
 ### Endings
@@ -146,7 +146,16 @@ biggestHit(state)                          -> log entry with the largest cash lo
 formatMoney(cents)                         -> "$412.50", "-$120.00"
 ```
 
-Invalid input (unknown choice index, a state past day 30) throws an `Error` with a message that names the problem.
+Invalid input (unknown choice index, a choice whose `requires` is not met, a finished state) throws an `Error` with a message that names the problem.
+
+Time: week 1 is days 1-7, week 2 is 8-14, week 3 is 15-21, week 4 is 22-30. Every event carries a `day`; `applyChoice` sets `state.day` to it.
+
+`nextWeek` does these in order, adding a log entry for each charge so the receipt shows it:
+
+1. If cash is below 0, charge a borrowing fee of 10% of the amount below zero, rounded to the nearest cent.
+2. Charge lunches $20.00 and transport $15.00.
+3. When leaving week 2, also charge the phone bill $45.00.
+4. Move to the first day of the next week. When leaving week 4, set `day: 30` and `finished: true` instead.
 
 ```js
 state = {
@@ -157,7 +166,8 @@ state = {
   mood: 5,             // 0..10
   flags: [],           // e.g. "phone-cracked"
   log: [],             // { week, event, choice, label, cash, savings, mood }
-  locks: []            // { puzzle, wrongTries, hintUsed }
+  locks: [],           // { puzzle, wrongTries, hintUsed }
+  finished: false      // true after the last nextWeek
 }
 ```
 
@@ -170,6 +180,7 @@ Data only, exported as arrays. Ids are kebab-case and never reused.
 event = {
   id: "broken-phone",
   week: 2,
+  day: 9,
   surprise: true,                 // true = drawn from the week's surprise pool
   title: "Your phone screen cracks",
   body: "It still turns on, but half the screen is dead.",
