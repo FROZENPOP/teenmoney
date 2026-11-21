@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Choice · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page choice">
+  <header class="choice-header">
+    <p class="eyebrow">Week 2 of 4, day 9</p>
+    <dl class="meters">
+      <div class="meter meter-cash">
+        <dt class="meter-label">Cash</dt>
+        <dd class="meter-value">$412.50</dd>
+      </div>
+      <div class="meter meter-savings">
+        <dt class="meter-label">Saved</dt>
+        <dd class="meter-value">$60.00</dd>
+      </div>
+      <div class="meter meter-mood" data-mood="okay" style="--mood: 5">
+        <dt class="meter-label">Mood</dt>
+        <dd class="meter-value"><span class="meter-mood-bar" aria-hidden="true"></span>okay</dd>
+      </div>
+    </dl>
+  </header>
+
+  <section class="choice-event" aria-labelledby="choice-title">
+    <p class="choice-tag">Surprise</p>
+    <h1 class="choice-title" id="choice-title">Your phone screen cracks</h1>
+    <p class="choice-body">It still turns on, but half the screen is dead.</p>
+  </section>
+
+  <ul class="choice-options">
+    <li>
+      <button class="choice-option" type="button">
+        <span class="choice-option-label">Fix it now</span>
+        <span class="choice-option-price money money-out">-$120.00</span>
+      </button>
+    </li>
+    <li>
+      <button class="choice-option" type="button">
+        <span class="choice-option-label">Live with it</span>
+        <span class="choice-option-price money">$0.00</span>
+      </button>
+    </li>
+    <li>
+      <button class="choice-option" type="button" aria-disabled="true" aria-describedby="choice-reason-2">
+        <span class="choice-option-label">Use your savings</span>
+        <span class="choice-option-price money money-out">-$120.00</span>
+        <span class="choice-option-from">from savings</span>
+        <span class="choice-option-reason" id="choice-reason-2">You have $60.00 saved. This needs $120.00.</span>
+      </button>
+    </li>
+  </ul>
+</main>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lock: read the pay stub · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page lock lock-code">
+  <header class="lock-header">
+    <p class="eyebrow">Week 1 door</p>
+    <h1 class="lock-prompt">The door code is how much was taken out of your pay.</h1>
+  </header>
+
+  <form class="lock-form">
+    <article class="lock-document doc doc-stub" aria-labelledby="lock-document-title">
+      <div class="lock-document-head">
+        <h2 class="doc-title" id="lock-document-title">Pay stub</h2>
+        <p class="doc-meta">Blend Street Smoothies · Days 1 to 30</p>
+      </div>
+      <table class="doc-table">
+        <tbody>
+          <tr><th scope="row">Hours 60 × $12.00</th><td class="doc-amount money">$720.00</td></tr>
+          <tr><th scope="row">Federal tax</th><td class="doc-amount money money-out">-$43.00</td></tr>
+          <tr><th scope="row">Social Security 6.2%</th><td class="doc-amount money money-out">-$44.64</td></tr>
+          <tr><th scope="row">Medicare 1.45%</th><td class="doc-amount money money-out">-$10.44</td></tr>
+        </tbody>
+        <tfoot>
+          <tr class="lock-code-row">
+            <th scope="row"><label for="lock-code-input">Total taken out</label></th>
+            <td class="doc-amount">
+              <span class="lock-code-entry">$<input class="lock-code-input" id="lock-code-input" name="code" type="text" inputmode="decimal" autocomplete="off" value="87.64" aria-invalid="true" aria-describedby="lock-feedback"></span>
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </article>
+
+    <div class="lock-feedback" id="lock-feedback" role="status">
+      <p class="lock-feedback-result">Not yet. The door stays shut.</p>
+      <p>2 wrong tries so far. Trying again costs nothing.</p>
+    </div>
+
+    <ol class="lock-hints">
+      <li class="lock-hint"><span class="lock-hint-label">Hint 1</span>Look at the lines with a minus sign.</li>
+      <li class="lock-hint-next">Hint 2 shows after one more wrong try.</li>
+    </ol>
+
+    <div class="lock-actions">
+      <button class="button button-block" type="submit">Try the door</button>
+    </div>
+  </form>
+</main>
+</body>
+</html>

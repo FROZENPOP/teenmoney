@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz, 2 of 6 · TeenMoney mockup</title>
+<link rel="stylesheet" href="../public/css/tokens.css">
+<link rel="stylesheet" href="../public/css/base.css">
+<link rel="stylesheet" href="../public/css/screens.css">
+</head>
+<body>
+<main class="page quiz">
+  <header class="quiz-header">
+    <p class="eyebrow">Six questions before you play</p>
+    <div class="quiz-progress">
+      <p class="quiz-progress-text">2 of 6</p>
+      <ol class="quiz-progress-steps" aria-hidden="true">
+        <li class="is-done"></li>
+        <li class="is-current"></li>
+        <li></li>
+        <li></li>
+        <li></li>
+        <li></li>
+      </ol>
+    </div>
+  </header>
+
+  <form class="quiz-form">
+    <fieldset class="quiz-question">
+      <legend class="quiz-question-text">You have $60 left until Friday. Which of these is a need?</legend>
+      <div class="quiz-options">
+        <label class="quiz-option">
+          <input class="quiz-option-input" type="radio" name="quiz-answer" value="0">
+          <span class="quiz-option-text">Concert tickets with your friends</span>
+        </label>
+        <label class="quiz-option">
+          <input class="quiz-option-input" type="radio" name="quiz-answer" value="1" checked>
+          <span class="quiz-option-text">Bus fare to get to your shifts</span>
+        </label>
+        <label class="quiz-option">
+          <input class="quiz-option-input" type="radio" name="quiz-answer" value="2">
+          <span class="quiz-option-text">A new phone case that's on sale</span>
+        </label>
+        <label class="quiz-option">
+          <input class="quiz-option-input" type="radio" name="quiz-answer" value="3">
+          <span class="quiz-option-text">A second streaming service</span>
+        </label>
+      </div>
+    </fieldset>
+    <button class="button button-block" type="submit">Next question</button>
+  </form>
+</main>
+</body>
+</html>
