@@ -58,7 +58,7 @@ test("3. applyChoice throws on bad input", () => {
 test("4. checkLock accepts 9808 for pay-stub and rejects other numbers", () => {
   assert.equal(checkLock(payStub, 9808), true);
   for (const wrong of [62192, 9807, 98.08, 0]) assert.equal(checkLock(payStub, wrong), false);
-  assert.throws(() => checkLock({ ...payStub, kind: "spot" }, 1), /not supported yet/);
+  assert.throws(() => checkLock({ ...payStub, kind: "dial" }, 1), /unknown lock kind "dial"/);
 });
 
 test("5. recordLockTry counts wrong tries and hintsToShow follows the lock rules", () => {
@@ -132,4 +132,21 @@ test("pickSurprise draws from the week's surprise pool", () => {
   assert.equal(pickSurprise(pool, 1, () => 0.99).id, "b");
   assert.equal(pickSurprise(pool, 1, () => 1).id, "b");
   assert.throws(() => pickSurprise(pool, 2, () => 0), /no surprise/);
+});
+
+test("checkLock handles spot and pick", () => {
+  const spot = puzzles.find((p) => p.kind === "spot");
+  assert.equal(checkLock(spot, spot.answer), true);
+  for (const wrong of ["paycheck", "", null, 0]) assert.equal(checkLock(spot, wrong), false);
+
+  const pick = puzzles.find((p) => p.kind === "pick");
+  assert.equal(checkLock(pick, [...pick.answer]), true);
+  assert.equal(checkLock(pick, [...pick.answer].reverse()), true, "order does not matter");
+  const allIds = pick.document.options.map((o) => o.id);
+  for (const wrong of [[], [pick.answer[0]], allIds, [pick.answer[0], pick.answer[0]], [...pick.answer, "bike-to-work"], "saturday-shift"]) {
+    assert.equal(checkLock(pick, wrong), false, String(wrong));
+  }
+  const input = [...pick.answer].reverse();
+  checkLock(pick, input);
+  assert.deepEqual(input, [...pick.answer].reverse(), "input is not mutated");
 });

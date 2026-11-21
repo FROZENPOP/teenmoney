@@ -1,5 +1,6 @@
-// Spending events. Room 1 only for now; rooms 2 to 4 come with task `rooms`.
+// Spending events for the four rooms. Each week has fixed choices and a pool of surprises (surprise: true).
 export const events = [
+  // Week 1: Payday (days 1-7)
   {
     id: "first-savings",
     week: 1,
@@ -36,6 +37,251 @@ export const events = [
       { label: "Buy a ticket", cash: -8500, mood: 2, result: "Best night of the month." },
       { label: "Say no", mood: -1, result: "You hear all about it on Monday." },
       { label: "Pay with savings", savings: -8500, mood: 2, requires: { savings: 8500 }, result: "Fun now, less cushion later." },
+    ],
+  },
+  {
+    id: "birthday-dinner",
+    week: 1,
+    day: 5,
+    surprise: true,
+    title: "Your best friend's birthday dinner",
+    body: "Everyone is splitting the bill at a nice place. Your share will be about $45.",
+    choices: [
+      { label: "Go and split the bill", cash: -4500, mood: 2, result: "Good food, better company." },
+      { label: "Just come for cake", mood: -1, result: "You showed up. That counts." },
+    ],
+  },
+  {
+    id: "flat-tire",
+    week: 1,
+    day: 7,
+    surprise: true,
+    title: "Your bike gets a flat tire",
+    body: "The shop wants $40 for a new tube and tire.",
+    choices: [
+      { label: "Fix it at the shop", cash: -4000, result: "Rolling again." },
+      { label: "Walk for now", mood: -2, result: "Your legs are not happy about it." },
+      { label: "Use your savings", savings: -4000, requires: { savings: 4000 }, result: "Savings saved the day." },
+    ],
+  },
+
+  // Week 2: Bills (days 8-14)
+  {
+    id: "phone-plan",
+    week: 2,
+    day: 8,
+    surprise: false,
+    title: "Your phone plan offers an upgrade",
+    body: "Unlimited data for $20 more this month. Your bill is $45 either way, due at the end of the week.",
+    choices: [
+      { label: "Keep your plan", result: "Same plan, same bill. Easy." },
+      { label: "Upgrade to unlimited", cash: -2000, mood: 1, result: "Stream all you want. You paid for it." },
+    ],
+  },
+  {
+    id: "late-for-work",
+    week: 2,
+    day: 10,
+    surprise: false,
+    title: "You keep running late for your shift",
+    body: "The bus is slow this week. A ride there costs about $12 each time.",
+    choices: [
+      { label: "Leave earlier and take the bus", mood: -1, result: "Early alarm. No extra cost." },
+      { label: "Get a ride twice", cash: -2400, mood: 1, result: "On time and $24 lighter." },
+    ],
+  },
+  {
+    id: "savings-top-up",
+    week: 2,
+    day: 12,
+    surprise: false,
+    title: "Halfway check-in",
+    body: "You're two weeks in. Want to move a bit more into savings?",
+    choices: [
+      { label: "Move $60 to savings", cash: -6000, savings: 6000, result: "Your cushion just got thicker." },
+      { label: "Move $20 to savings", cash: -2000, savings: 2000, result: "Little by little." },
+      { label: "Not this week", result: "Fair. Bills come first." },
+    ],
+  },
+  {
+    id: "broken-phone",
+    week: 2,
+    day: 9,
+    surprise: true,
+    title: "Your phone screen cracks",
+    body: "It still turns on, but half the screen is dead.",
+    choices: [
+      { label: "Fix it now", cash: -12000, mood: 1, result: "Fixed. That hurt." },
+      { label: "Live with it", mood: -2, flag: "phone-cracked", result: "You squint at it for the rest of the month." },
+      { label: "Use your savings", savings: -12000, requires: { savings: 12000 }, result: "This is what savings are for." },
+    ],
+  },
+  {
+    id: "tooth-ache",
+    week: 2,
+    day: 11,
+    surprise: true,
+    title: "Your tooth starts to ache",
+    body: "The dentist can see you this week. Your share of the bill is $60.",
+    choices: [
+      { label: "Go to the dentist", cash: -6000, result: "Small filling. Big relief." },
+      { label: "Wait and hope", mood: -2, result: "It still hurts every time you chew." },
+      { label: "Use your savings", savings: -6000, requires: { savings: 6000 }, result: "Emergency handled. That's the point." },
+    ],
+  },
+  {
+    id: "charger-dies",
+    week: 2,
+    day: 13,
+    surprise: true,
+    title: "Your laptop charger dies",
+    body: "You have homework due. A new charger is $45.",
+    choices: [
+      { label: "Buy a new one", cash: -4500, result: "Back in business." },
+      { label: "Borrow one at school", mood: -1, result: "It works, but only in the library." },
+      { label: "Use your savings", savings: -4500, requires: { savings: 4500 }, result: "Glad you had it." },
+    ],
+  },
+
+  // Week 3: Temptation (days 15-21)
+  {
+    id: "sneaker-sale",
+    week: 3,
+    day: 16,
+    surprise: false,
+    title: "The sneakers you've wanted are on sale",
+    body: "They're $98 today, down from $140. The sale ends tonight.",
+    choices: [
+      { label: "Buy them", cash: -9800, mood: 2, result: "They feel amazing. So did $98." },
+      { label: "Let the sale go", mood: -1, result: "There will be other sales." },
+      { label: "Buy them with savings", savings: -9800, mood: 2, requires: { savings: 9800 }, result: "New shoes, thinner cushion." },
+    ],
+  },
+  {
+    id: "pay-later-earbuds",
+    week: 3,
+    day: 18,
+    surprise: false,
+    title: "Buy now, pay later",
+    body: "Wireless earbuds are $160. The checkout offers 4 payments of $42 plus a $7 fee.",
+    choices: [
+      { label: "Pay in 4 ($175 in total)", cash: -17500, mood: 2, result: "Small payments, but they add up to more than the price." },
+      { label: "Pay $160 now", cash: -16000, mood: 2, result: "Pricey, but no extra fees." },
+      { label: "Skip them", result: "Your old earbuds still work." },
+    ],
+  },
+  {
+    id: "weekend-plans",
+    week: 3,
+    day: 20,
+    surprise: false,
+    title: "Friends are going out on Saturday",
+    body: "Pizza and a movie, about $30. Or just pizza for $12.",
+    choices: [
+      { label: "Pizza and the movie", cash: -3000, mood: 2, result: "Great night out." },
+      { label: "Just pizza", cash: -1200, mood: 1, result: "You still got the best part." },
+      { label: "Stay in", mood: -1, result: "Quiet night. Your wallet likes it." },
+    ],
+  },
+  {
+    id: "game-flash-sale",
+    week: 3,
+    day: 17,
+    surprise: true,
+    title: "A game you love is on flash sale",
+    body: "The deluxe edition is $60 for the next hour.",
+    choices: [
+      { label: "Buy it", cash: -6000, mood: 2, result: "Good luck sleeping tonight." },
+      { label: "Add it to your wishlist", mood: -1, result: "It'll go on sale again." },
+    ],
+  },
+  {
+    id: "lost-bus-pass",
+    week: 3,
+    day: 19,
+    surprise: true,
+    title: "You lose your bus pass",
+    body: "A replacement pass costs $40.",
+    choices: [
+      { label: "Buy a new pass", cash: -4000, result: "Annoying, but sorted." },
+      { label: "Walk everywhere", mood: -2, result: "So many steps." },
+      { label: "Use your savings", savings: -4000, requires: { savings: 4000 }, result: "Savings to the rescue." },
+    ],
+  },
+  {
+    id: "jacket-sale",
+    week: 3,
+    day: 21,
+    surprise: true,
+    title: "A jacket you like is half off",
+    body: "It's $55 instead of $110. Your old one is fine.",
+    choices: [
+      { label: "Buy it", cash: -5500, mood: 1, result: "Warm, and $55 lighter." },
+      { label: "Keep your old one", result: "Still warm. Still free." },
+    ],
+  },
+
+  // Week 4: The squeeze (days 22-30)
+  {
+    id: "hours-cut",
+    week: 4,
+    day: 22,
+    surprise: false,
+    title: "Your hours get cut",
+    body: "The shop is slow. Your manager takes 6 hours off your schedule, and $62 of pay with them.",
+    choices: [
+      { label: "Take the cut", cash: -6200, result: "Less work, less money. Same bills." },
+      { label: "Cover a Sunday shift and win back $42", cash: -2000, mood: -2, result: "Now you're only $20 down. You're wiped out." },
+    ],
+  },
+  {
+    id: "group-gift",
+    week: 4,
+    day: 25,
+    surprise: false,
+    title: "The group gift for your coach is due",
+    body: "The team is getting a gift. Most people are chipping in $25.",
+    choices: [
+      { label: "Chip in $25", cash: -2500, mood: 1, result: "Coach loved it." },
+      { label: "Chip in $10 and make a card", cash: -1000, mood: 1, result: "The card got the biggest smile." },
+      { label: "Skip it", mood: -2, result: "Awkward at practice." },
+    ],
+  },
+  {
+    id: "friend-loan",
+    week: 4,
+    day: 24,
+    surprise: true,
+    title: "A friend asks to borrow $50",
+    body: "They swear they'll pay you back next month.",
+    choices: [
+      { label: "Lend it", cash: -5000, mood: 1, result: "Good friend. Hope they remember." },
+      { label: "Say you can't this month", mood: -1, result: "Hard to say. Probably right." },
+    ],
+  },
+  {
+    id: "doctor-visit",
+    week: 4,
+    day: 27,
+    surprise: true,
+    title: "You get really sick",
+    body: "The clinic visit and medicine come to $70.",
+    choices: [
+      { label: "Go to the clinic", cash: -7000, result: "Medicine works. You feel human again." },
+      { label: "Tough it out", mood: -3, result: "A miserable week." },
+      { label: "Use your savings", savings: -7000, requires: { savings: 7000 }, result: "Exactly what savings are for." },
+    ],
+  },
+  {
+    id: "library-fine",
+    week: 4,
+    day: 28,
+    surprise: true,
+    title: "The library says you lost a book",
+    body: "The replacement fee is $40, and they hold your grades until it's paid.",
+    choices: [
+      { label: "Pay the fee", cash: -4000, result: "Paid. Lesson learned." },
+      { label: "Pay it from savings", savings: -4000, requires: { savings: 4000 }, result: "Done, and your cash is safe." },
     ],
   },
 ];
